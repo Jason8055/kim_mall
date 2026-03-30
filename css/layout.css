@@ -1,0 +1,93 @@
+/* ============================================================
+   css/layout.css
+   반응형 레이아웃 — 모바일 풀폭 + 데스크탑 480px 중앙 앱 뷰
+   고정(fixed) 요소(헤더, 푸터, 토스트)도 앱 너비에 맞춤
+   ============================================================ */
+
+/* ── 전체 앱 래퍼 ── */
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-bottom: 56px; /* 하단 네비 높이만큼 여백 */
+  background: var(--color-bg);
+}
+
+/* ── 헤더 높이(50+46 = 96px)만큼 상단 여백 ── */
+.pt-header {
+  padding-top: 96px;
+}
+
+/* ── 상품 그리드 (2열) ── */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--color-border-light);
+}
+
+/* ── 구분선 ── */
+.divider {
+  height: 8px;
+  background: var(--color-bg);
+  border: none;
+  margin: 0;
+}
+.divider-thin {
+  height: 1px;
+  background: var(--color-divider);
+  border: none;
+  margin: 0;
+}
+
+/* ── 스크롤바 숨기기 ── */
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+
+/* ==================================================================
+   데스크탑 반응형: 480px 중앙 앱 뷰 (모바일앱 느낌)
+   모든 fixed 요소를 앱 너비 안에 가둠
+   ================================================================== */
+@media (min-width: 640px) {
+  /* 배경을 약간 어둡게 해서 앱 영역이 돋보이게 */
+  html {
+    background: #E0E5EB;
+  }
+
+  /* 앱 컨테이너를 480px로 제한, 중앙 정렬 */
+  #app {
+    max-width: 480px;
+    margin: 0 auto;
+    box-shadow: 0 0 40px rgba(0,0,0,0.08);
+    position: relative;
+  }
+
+  /* ── 헤더: 480px 내로 고정 ── */
+  .app-header {
+    max-width: 480px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+  }
+
+  /* ── 하단 네비: 480px 내로 고정 ── */
+  .bottom-nav {
+    max-width: 480px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+  }
+
+  /* ── 상세/장바구니 하단 CTA 바: 480px 내로 고정 ── */
+  .fixed-bottom-cta {
+    max-width: 480px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+  }
+
+  /* ── 토스트 알림: 앱 너비 안으로 ── */
+  .toast-container {
+    max-width: 440px;
+  }
+}

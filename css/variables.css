@@ -1,0 +1,87 @@
+/* ============================================================
+   css/variables.css
+   더불어민주당 브랜딩 + 쇼핑몰 — 역동적이고 눈에 확 들어오는 디자인
+   ============================================================ */
+
+:root {
+  /* ── 더불어민주당 공식 컬러 기반 ── */
+  --color-party-blue: #004EA2;       /* 민주당 공식 블루 */
+  --color-party-blue-dark: #003A7A;  /* 진한 블루 */
+  --color-party-blue-light: #1B6FD6; /* 밝은 블루 */
+  --color-party-blue-bg: #E8F0FE;   /* 연한 블루 배경 */
+  --color-party-yellow: #FFD600;     /* 민주당 강조 옐로 */
+
+  /* ── 브랜드 Primary = 민주당 블루 ── */
+  --color-primary: var(--color-party-blue);
+  --color-primary-dark: var(--color-party-blue-dark);
+  --color-primary-light: var(--color-party-blue-light);
+
+  /* ── 강조/상태 컬러 ── */
+  --color-red: #E44D2E;
+  --color-red-light: #FFF0ED;
+  --color-gold: #FF9500;
+  --color-green: #00B050;
+
+  /* ── 배경 (밝은 테마) ── */
+  --color-bg: #F2F4F6;
+  --color-bg-white: #FFFFFF;
+  --color-bg-section: #F0F0F0;
+
+  /* ── 텍스트 ── */
+  --color-text-black: #111111;
+  --color-text-dark: #333333;
+  --color-text-gray: #666666;
+  --color-text-light: #999999;
+  --color-text-white: #FFFFFF;
+
+  /* ── 테두리 ── */
+  --color-border: #E5E5E5;
+  --color-border-light: #F0F0F0;
+  --color-divider: #EEEEEE;
+
+  /* ── 그라디언트 (역동적 효과) ── */
+  --gradient-hero: linear-gradient(135deg, #004EA2 0%, #1B6FD6 50%, #0097D9 100%);
+  --gradient-cta: linear-gradient(135deg, #004EA2, #0068C8);
+  --gradient-hot: linear-gradient(135deg, #FF6B35, #E44D2E);
+
+  /* ── 폰트 ── */
+  --font-primary: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+
+  /* ── 글꼴 크기 ── */
+  --text-xs: 0.6875rem;
+  --text-sm: 0.75rem;
+  --text-base: 0.8125rem;
+  --text-md: 0.875rem;
+  --text-lg: 1rem;
+  --text-xl: 1.125rem;
+  --text-2xl: 1.25rem;
+  --text-3xl: 1.5rem;
+
+  /* ── 간격 ── */
+  --gap-xs: 4px;
+  --gap-sm: 8px;
+  --gap-md: 12px;
+  --gap-lg: 16px;
+  --gap-xl: 20px;
+  --gap-2xl: 24px;
+  --gap-3xl: 32px;
+
+  /* ── 둥글기 ── */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-pill: 100px;
+
+  /* ── 그림자 ── */
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-elevated: 0 4px 16px rgba(0,0,0,0.12);
+  --shadow-header: 0 2px 4px rgba(0,0,0,0.06);
+  --shadow-blue-glow: 0 4px 20px rgba(0,78,162,0.25);
+
+  /* ── z-index ── */
+  --z-header: 100;
+  --z-bottom-nav: 100;
+  --z-modal: 1000;
+  --z-toast: 9999;
+}

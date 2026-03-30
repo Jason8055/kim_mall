@@ -1,0 +1,70 @@
+/* ============================================================
+   css/admin.css
+   관리자 대시보드 전용 스타일
+   ============================================================ */
+
+.admin-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.admin-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-divider);
+}
+.admin-card-header .material-symbols-rounded {
+  font-size: 22px;
+  color: var(--color-primary);
+}
+.admin-card-header h2 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text-black);
+}
+
+.admin-field {
+  margin-bottom: 14px;
+}
+.admin-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-gray);
+  margin-bottom: 6px;
+}
+.admin-field input,
+.admin-field textarea,
+.admin-field select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--color-text-dark);
+  background: var(--color-bg-white);
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+.admin-field input:focus,
+.admin-field textarea:focus {
+  border-color: var(--color-primary);
+  outline: none;
+}
+.admin-field textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+.admin-hint {
+  display: block;
+  font-size: 11px;
+  color: var(--color-text-light);
+  margin-top: 4px;
+}

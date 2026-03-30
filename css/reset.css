@@ -1,0 +1,66 @@
+/* ============================================================
+   css/reset.css
+   쿠팡/11번가 스타일 — 브라우저 초기화
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: var(--font-primary);
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--color-bg);       /* 밝은 회색 전체 배경 */
+  color: var(--color-text-dark);           /* 어두운 텍스트 */
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+ul, ol { list-style: none; }
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+img, picture, video, svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+input, button, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  border: none;
+  outline: none;
+  background: transparent;
+}
+
+button { cursor: pointer; }
+button:disabled { cursor: not-allowed; opacity: 0.5; }
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  line-height: 1.3;
+  font-weight: 700;
+  color: var(--color-text-black);
+}
+
+p { overflow-wrap: break-word; }
+
+/* 스크롤바 숨기기 (카테고리 가로 스크롤 영역) */
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.hide-scrollbar::-webkit-scrollbar { display: none; }
