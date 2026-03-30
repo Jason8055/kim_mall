@@ -4,7 +4,8 @@
  * 비밀번호 인증 후 핵심 설정을 수정할 수 있는 관리 화면
  */
 import { getConfig, saveConfig, resetConfig, checkAdminPassword, getDefaultConfig } from '../utils/config.js';
-import { policies } from '../data/policies.js';
+import { getPolicies, defaultPolicies } from '../data/policies.js';
+import { savePolicyOverride, resetPolicyOverride, getPolicyOverrides } from '../utils/policyManager.js';
 import { resizeImageFile } from '../utils/imageHelper.js';
 import { getAllCustomReviews, addReview, deleteReview, getReviews, getTotalCustomReviewCount } from '../utils/reviews.js';
 
@@ -176,30 +177,54 @@ export function renderAdmin(container) {
             </div>
           </div>
 
-          <!-- ========== 섹션 4: 현재 등록된 공약 ========== -->
+          <!-- ========== 섹션 4: 공약 관리 (직접 수정) ========== -->
           <div class="admin-card">
             <div class="admin-card-header">
-              <span class="material-symbols-rounded">inventory_2</span>
-              <h2>등록된 공약 (${policies.length}개)</h2>
+              <span class="material-symbols-rounded">edit_document</span>
+              <h2>공약 정보 수정 (${getPolicies().length}개)</h2>
             </div>
-            ${policies.map((p, i) => `
-              <div style="display:flex; align-items:center; gap:10px; padding:10px 0; ${i > 0 ? 'border-top:1px solid var(--color-divider);' : ''}">
-                <img src="${p.image}" style="width:50px; height:50px; border-radius:6px; object-fit:cover; flex-shrink:0;">
-                <div style="flex:1; min-width:0;">
-                  <div style="font-size:13px; font-weight:600; color:var(--color-text-dark);">${p.title}</div>
-                  <div style="font-size:11px; color:var(--color-text-gray);">${p.subtitle}</div>
+            ${getPolicies().map((p, i) => `
+              <div style="padding:16px 0; ${i > 0 ? 'border-top:1px solid var(--color-divider);' : ''}">
+                <div style="display:flex; align-items:flex-start; gap:10px;">
+                  <img src="${p.image}" style="width:50px; height:50px; border-radius:6px; object-fit:cover; flex-shrink:0;">
+                  <div style="flex:1; min-width:0;">
+                    <div style="font-size:13px; font-weight:600; color:var(--color-text-dark);">${p.title}</div>
+                    <div style="font-size:11px; color:var(--color-text-gray); margin-bottom:4px; line-height:1.3;">${p.subtitle}</div>
+                    <div style="font-size:11px; color:var(--color-primary);">${p.buyPoint || ''}</div>
+                  </div>
+                  <button onclick="window._toggleEditPolicy('${p.id}')" style="flex-shrink:0; font-size:12px; padding:6px 12px; border-radius:4px; background:var(--color-party-blue-bg); color:var(--color-primary); font-weight:600; border:none; cursor:pointer;">
+                    수정
+                  </button>
                 </div>
-                <span class="badge ${p.badge === 'best' ? 'badge-best' : p.badge === 'md-pick' ? 'badge-md' : 'badge-urgent'}">
-                  ${p.badge === 'best' ? '특가' : p.badge === 'md-pick' ? 'MD추천' : '한정판'}
-                </span>
+
+                <div id="edit-form-${p.id}" style="display:none; margin-top:12px; padding:12px; background:#fafafa; border-radius:8px; border:1px solid var(--color-border-light);">
+                  <div class="admin-field" style="margin-bottom:8px;">
+                    <label>이미지 변경 <span style="font-size:10px; color:var(--color-text-light); font-weight:400;">(선택)</span></label>
+                    <input type="file" id="edit-img-${p.id}" accept="image/*" />
+                  </div>
+                  <div class="admin-field" style="margin-bottom:8px;">
+                    <label>제목</label>
+                    <input type="text" id="edit-title-${p.id}" value="${p.title}" />
+                  </div>
+                  <div class="admin-field" style="margin-bottom:8px;">
+                    <label>부제목(설명)</label>
+                    <input type="text" id="edit-sub-${p.id}" value="${p.subtitle}" />
+                  </div>
+                  <div class="admin-field" style="margin-bottom:8px;">
+                    <label>기대효과 (구매포인트)</label>
+                    <input type="text" id="edit-point-${p.id}" value="${p.buyPoint || ''}" />
+                  </div>
+                  <div class="admin-field" style="margin-bottom:8px;">
+                    <label>상세 내용 (줄바꿈 허용)</label>
+                    <textarea id="edit-details-${p.id}" rows="4" style="line-height:1.5;">${Array.isArray(p.details) ? p.details.join('\\n') : p.details}</textarea>
+                  </div>
+                  <div style="display:flex; gap:8px; margin-top:12px;">
+                    <button onclick="window._savePolicyEdit('${p.id}')" class="btn btn-primary" style="flex:1; height:36px; border-radius:6px; font-size:13px; font-weight:600;">✅ 저장</button>
+                    ${getPolicyOverrides()[p.id] ? `<button onclick="window._resetPolicyEdit('${p.id}')" class="btn btn-outline" style="flex:1; height:36px; border-radius:6px; font-size:13px; color:var(--color-red); border-color:var(--color-red); font-weight:600;">🔄 기본값 복구</button>` : ''}
+                  </div>
+                </div>
               </div>
             `).join('')}
-            <div style="margin-top:12px; padding:12px; background:var(--color-party-blue-bg); border-radius:8px;">
-              <p style="font-size:12px; color:var(--color-text-gray); line-height:1.5;">
-                ℹ️ 공약 내용을 수정하려면 <strong>js/data/policies.js</strong> 파일을 직접 편집해주세요.
-                수정 후 <code>npm run build</code>로 빌드하면 반영됩니다.
-              </p>
-            </div>
           </div>
 
           <!-- ========== 섹션 5: 리뷰(댓글) 관리 ========== -->
@@ -414,6 +439,47 @@ export function renderAdmin(container) {
     window._deleteReview = (policyId, reviewId) => {
       if (confirm('이 리뷰를 삭제하시겠습니까?')) {
         deleteReview(policyId, reviewId);
+        renderDashboard();
+      }
+    };
+
+    // 공약 에디터 토글
+    window._toggleEditPolicy = (policyId) => {
+      const form = document.getElementById(`edit-form-${policyId}`);
+      if (form) {
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+      }
+    };
+
+    // 공약 에디터 저장
+    window._savePolicyEdit = async (policyId) => {
+      try {
+        const title = document.getElementById(`edit-title-${policyId}`).value.trim();
+        const subtitle = document.getElementById(`edit-sub-${policyId}`).value.trim();
+        const buyPoint = document.getElementById(`edit-point-${policyId}`).value.trim();
+        const details = document.getElementById(`edit-details-${policyId}`).value;
+        const fileInput = document.getElementById(`edit-img-${policyId}`);
+
+        const updates = { title, subtitle, buyPoint, details };
+
+        if (fileInput && fileInput.files[0]) {
+          const base64Img = await resizeImageFile(fileInput.files[0]);
+          updates.image = base64Img;
+        }
+
+        savePolicyOverride(policyId, updates);
+        alert('공약이 수정되었습니다.');
+        renderDashboard();
+      } catch (err) {
+        alert('저장 중 오류가 발생했습니다.');
+        console.error(err);
+      }
+    };
+
+    // 공약 에디터 초기화
+    window._resetPolicyEdit = (policyId) => {
+      if (confirm('이 공약의 모든 수정사항을 초기화하시겠습니까? (기본값으로 복구)')) {
+        resetPolicyOverride(policyId);
         renderDashboard();
       }
     };

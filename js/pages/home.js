@@ -7,7 +7,7 @@
  * 3. 프로모션: 02 전화 꼭 받아주세요 + 이재명 연결 마케팅
  * 4. 카테고리: 3대 킬러 공약 필터
  */
-import { policies, categories } from '../data/policies.js';
+import { getPolicies, categories } from '../data/policies.js';
 import { renderCountdown } from '../components/countdown.js';
 import { toggleCartItem, isInCart } from '../utils/cart.js';
 import { getConfig } from '../utils/config.js';
@@ -17,9 +17,10 @@ export function renderHome(container) {
 
   function render() {
     const cfg = getConfig();
+    const currentPolicies = getPolicies();
     const filtered = activeFilter === 'all'
-      ? policies
-      : policies.filter(p => p.badge === activeFilter);
+      ? currentPolicies
+      : currentPolicies.filter(p => p.badge === activeFilter);
 
     container.innerHTML = `
       <div class="pt-header">

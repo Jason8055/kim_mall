@@ -3,8 +3,10 @@
  * 군산 1번가 — 김재준 후보의 3대 킬러 공약 (상품) 데이터
  * ── 전략 보고서 원문을 그대로 반영 ──
  */
+import { applyOverrides } from '../utils/policyManager.js';
 
-export const policies = [
+/** 기본 공약 데이터 (원본) */
+export const defaultPolicies = [
   {
     id: "economy-rocket",
     category: "economy",
@@ -104,6 +106,14 @@ export const policies = [
     relatedIds: ["economy-rocket", "comm-direct"]
   }
 ];
+
+/** 오버라이드 적용된 공약 목록 (동적으로 호출마다 최신 반영) */
+export function getPolicies() {
+  return applyOverrides(defaultPolicies);
+}
+
+/** 하위 호환용 — 직접 import { policies }로 쓰던 곳도 동작 */
+export const policies = defaultPolicies;
 
 // 카테고리 정의
 export const categories = [

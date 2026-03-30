@@ -4,13 +4,14 @@
  * 전략 보고서의 핵심 메시지를 SNS 공유 텍스트에 반영
  */
 import { getCartItems, toggleCartItem, clearCart, markAsSupported } from '../utils/cart.js';
-import { policies } from '../data/policies.js';
+import { getPolicies } from '../data/policies.js';
 
 export function renderCart(container) {
 
   function render() {
     const cartIds = getCartItems();
-    const cartPolicies = cartIds.map(id => policies.find(p => p.id === id)).filter(Boolean);
+    const currentPolicies = getPolicies();
+    const cartPolicies = cartIds.map(id => currentPolicies.find(p => p.id === id)).filter(Boolean);
     const hasItems = cartPolicies.length > 0;
 
     if (!hasItems) {

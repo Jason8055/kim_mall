@@ -3,19 +3,20 @@
  * 군산 1번가 — 상품(공약) 상세 페이지
  * 전략 보고서의 '구매 포인트(기대효과)' 및 핵심 메시지 반영
  */
-import { policies } from '../data/policies.js';
+import { getPolicies } from '../data/policies.js';
 import { isInCart, toggleCartItem } from '../utils/cart.js';
 import { getReviews } from '../utils/reviews.js';
 
 export function renderDetail(container, id) {
-  const policy = policies.find(p => p.id === id);
+  const currentPolicies = getPolicies();
+  const policy = currentPolicies.find(p => p.id === id);
   if (!policy) { location.hash = '#/'; return; }
 
   function render() {
     const added = isInCart(policy.id);
     const catLabel = policy.category === 'economy' ? '경제/산업'
       : policy.category === 'communication' ? '소통/행정' : '청년/미래';
-    const relatedPolicies = policies.filter(p => policy.relatedIds?.includes(p.id));
+    const relatedPolicies = currentPolicies.filter(p => policy.relatedIds?.includes(p.id));
 
     container.innerHTML = `
       <div style="padding-bottom: 72px; background: var(--color-bg);">
