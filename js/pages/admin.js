@@ -240,7 +240,7 @@ export function renderAdmin(container) {
               <div class="admin-field" style="margin-bottom:8px;">
                 <label>공약 선택</label>
                 <select id="rv-policy">
-                  ${policies.map(p => `<option value="${p.id}">${p.title}</option>`).join('')}
+                  ${getPolicies().map(p => `<option value="${p.id}">${p.title}</option>`).join('')}
                 </select>
               </div>
               <div style="display:flex; gap:8px; margin-bottom:8px;">
@@ -272,7 +272,7 @@ export function renderAdmin(container) {
             </div>
 
             <!-- 공약별 리뷰 목록 -->
-            ${policies.map(p => {
+            ${getPolicies().map(p => {
               const allReviews = getReviews(p.id, p.reviews);
               const customReviews = (getAllCustomReviews()[p.id] || []);
               return `
