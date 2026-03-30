@@ -56,6 +56,8 @@ export async function renderAdmin(container) {
     const config = await getConfig();
     const policies = await getPolicies();
     const overrides = await getPolicyOverrides();
+    const customReviewsAll = await getAllCustomReviews();
+    const reviewCount = await getTotalCustomReviewCount();
 
     container.innerHTML = `
       <div style="min-height:100vh; background:var(--color-bg); padding:20px; padding-bottom:40px;">
@@ -183,9 +185,9 @@ export async function renderAdmin(container) {
           <div class="admin-card">
             <div class="admin-card-header">
               <span class="material-symbols-rounded">edit_document</span>
-              <h2>공약 정보 수정 (${getPolicies().length}개)</h2>
+              <h2>공약 정보 수정 (${policies.length}개)</h2>
             </div>
-            ${getPolicies().map((p, i) => `
+            ${policies.map((p, i) => `
               <div style="padding:16px 0; ${i > 0 ? 'border-top:1px solid var(--color-divider);' : ''}">
                 <div style="display:flex; align-items:flex-start; gap:10px;">
                   <img src="${p.image}" style="width:50px; height:50px; border-radius:6px; object-fit:cover; flex-shrink:0;">
@@ -233,7 +235,7 @@ export async function renderAdmin(container) {
           <div class="admin-card">
             <div class="admin-card-header">
               <span class="material-symbols-rounded">rate_review</span>
-              <h2>리뷰(댓글) 관리 <span style="font-size:12px; color:var(--color-text-gray); font-weight:400;">추가 ${await getTotalCustomReviewCount()}개</span></h2>
+              <h2>리뷰(댓글) 관리 <span style="font-size:12px; color:var(--color-text-gray); font-weight:400;">추가 ${reviewCount}개</span></h2>
             </div>
 
             <!-- 리뷰 추가 폼 -->
