@@ -7,16 +7,17 @@ import { getPolicies } from '../data/policies.js';
 import { isInCart, toggleCartItem } from '../utils/cart.js';
 import { getReviews } from '../utils/reviews.js';
 
-export function renderDetail(container, id) {
-  const currentPolicies = getPolicies();
+export async function renderDetail(container, id) {
+  const currentPolicies = await getPolicies();
   const policy = currentPolicies.find(p => p.id === id);
   if (!policy) { location.hash = '#/'; return; }
 
-  function render() {
+  async function render() {
     const added = isInCart(policy.id);
     const catLabel = policy.category === 'economy' ? '경제/산업'
       : policy.category === 'communication' ? '소통/행정' : '청년/미래';
     const relatedPolicies = currentPolicies.filter(p => policy.relatedIds?.includes(p.id));
+    const reviews = await getReviews(policy.id, policy.reviews);
 
     container.innerHTML = `
       <div style="padding-bottom: 72px; background: var(--color-bg);">
@@ -110,11 +111,11 @@ export function renderDetail(container, id) {
         <div style="background:#fff;">
           <div style="padding:20px 16px 12px; display:flex; align-items:center; justify-content:space-between;">
             <h3 style="font-size:15px; font-weight:700;">
-              상품평 <span style="color:var(--color-primary);">${getReviews(policy.id, policy.reviews).length}</span>
+              상품평 <span style="color:var(--color-primary);">${reviews.length}</span>
             </h3>
           </div>
 
-          ${getReviews(policy.id, policy.reviews).map(r => `
+          ${reviews.map(r => `
             <div class="review-card">
               <div class="review-header">
                 <div class="review-avatar">${r.author.charAt(0)}</div>
@@ -136,6 +137,10 @@ export function renderDetail(container, id) {
             </div>
           `).join('')}
         </div>
+        
+        <script>
+          // 스크립트를 통해 초기 렌더링 후 이벤트 핸들러 등 추가 작업 가능 (필요 시)
+        </script>
 
         ${relatedPolicies.length > 0 ? `
         <div class="divider"></div>
@@ -183,5 +188,5 @@ export function renderDetail(container, id) {
     };
   }
 
-  render();
+  await render();
 }

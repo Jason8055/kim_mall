@@ -11,7 +11,7 @@ import { getAllCustomReviews, addReview, deleteReview, getReviews, getTotalCusto
 
 let isAuthenticated = false;
 
-export function renderAdmin(container) {
+export async function renderAdmin(container) {
 
   function renderLogin() {
     container.innerHTML = `
@@ -41,19 +41,21 @@ export function renderAdmin(container) {
       if (e.key === 'Enter') handleLogin();
     });
 
-    function handleLogin() {
+    async function handleLogin() {
       const pw = document.getElementById('adminPw').value;
       if (checkAdminPassword(pw)) {
         isAuthenticated = true;
-        renderDashboard();
+        await renderDashboard();
       } else {
         document.getElementById('pwError').style.display = 'block';
       }
     }
   }
 
-  function renderDashboard() {
-    const config = getConfig();
+  async function renderDashboard() {
+    const config = await getConfig();
+    const policies = await getPolicies();
+    const overrides = await getPolicyOverrides();
 
     container.innerHTML = `
       <div style="min-height:100vh; background:var(--color-bg); padding:20px; padding-bottom:40px;">
@@ -220,7 +222,7 @@ export function renderAdmin(container) {
                   </div>
                   <div style="display:flex; gap:8px; margin-top:12px;">
                     <button onclick="window._savePolicyEdit('${p.id}')" class="btn btn-primary" style="flex:1; height:36px; border-radius:6px; font-size:13px; font-weight:600;">✅ 저장</button>
-                    ${getPolicyOverrides()[p.id] ? `<button onclick="window._resetPolicyEdit('${p.id}')" class="btn btn-outline" style="flex:1; height:36px; border-radius:6px; font-size:13px; color:var(--color-red); border-color:var(--color-red); font-weight:600;">🔄 기본값 복구</button>` : ''}
+                    ${overrides[p.id] ? `<button onclick="window._resetPolicyEdit('${p.id}')" class="btn btn-outline" style="flex:1; height:36px; border-radius:6px; font-size:13px; color:var(--color-red); border-color:var(--color-red); font-weight:600;">🔄 기본값 복구</button>` : ''}
                   </div>
                 </div>
               </div>
@@ -231,7 +233,7 @@ export function renderAdmin(container) {
           <div class="admin-card">
             <div class="admin-card-header">
               <span class="material-symbols-rounded">rate_review</span>
-              <h2>리뷰(댓글) 관리 <span style="font-size:12px; color:var(--color-text-gray); font-weight:400;">추가 ${getTotalCustomReviewCount()}개</span></h2>
+              <h2>리뷰(댓글) 관리 <span style="font-size:12px; color:var(--color-text-gray); font-weight:400;">추가 ${await getTotalCustomReviewCount()}개</span></h2>
             </div>
 
             <!-- 리뷰 추가 폼 -->
@@ -240,7 +242,7 @@ export function renderAdmin(container) {
               <div class="admin-field" style="margin-bottom:8px;">
                 <label>공약 선택</label>
                 <select id="rv-policy">
-                  ${getPolicies().map(p => `<option value="${p.id}">${p.title}</option>`).join('')}
+                  ${policies.map(p => `<option value="${p.id}">${p.title}</option>`).join('')}
                 </select>
               </div>
               <div style="display:flex; gap:8px; margin-bottom:8px;">
@@ -272,15 +274,14 @@ export function renderAdmin(container) {
             </div>
 
             <!-- 공약별 리뷰 목록 -->
-            ${getPolicies().map(p => {
-              const allReviews = getReviews(p.id, p.reviews);
-              const customReviews = (getAllCustomReviews()[p.id] || []);
+            ${policies.map(p => {
+              const customReviews = (customReviewsAll[p.id] || []);
               return `
               <div style="margin-bottom:12px;">
                 <div style="font-size:13px; font-weight:700; color:var(--color-text-dark); padding:8px 0; border-bottom:1px solid var(--color-divider);">
                   ${p.title}
                   <span style="font-size:11px; color:var(--color-text-gray); font-weight:400;">
-                    기본 ${p.reviews.length}개 + 추가 ${customReviews.length}개 = 총 ${allReviews.length}개
+                    추가 ${customReviews.length}개
                   </span>
                 </div>
                 ${customReviews.length > 0 ? customReviews.map(r => `
@@ -385,16 +386,16 @@ export function renderAdmin(container) {
         promoImage,
         footerImage
       };
-      saveConfig(newConfig);
-      renderDashboard(); // 미리보기 업데이트
-      alert('✅ 설정이 저장되었습니다!\n쇼핑몰 페이지에서 확인해보세요.');
+      await saveConfig(newConfig);
+      await renderDashboard(); // 미리보기 업데이트
+      alert('✅ 설정이 실시간 DB에 저장되었습니다!\n모든 기기에서 즉시 반영됩니다.');
     });
 
     // 초기화
-    document.getElementById('resetBtn').addEventListener('click', () => {
+    document.getElementById('resetBtn').addEventListener('click', async () => {
       if (confirm('정말 기본값으로 초기화하시겠습니까?')) {
-        resetConfig();
-        renderDashboard();
+        await resetConfig();
+        await renderDashboard();
         alert('✅ 기본값으로 초기화되었습니다.');
       }
     });
@@ -408,17 +409,17 @@ export function renderAdmin(container) {
     delHandlers.forEach(({ id, key }) => {
       const btn = document.getElementById(id);
       if (btn) {
-        btn.addEventListener('click', () => {
-          const cfg = getConfig();
+        btn.addEventListener('click', async () => {
+          const cfg = await getConfig();
           cfg[key] = '';
-          saveConfig(cfg);
-          renderDashboard();
+          await saveConfig(cfg);
+          await renderDashboard();
         });
       }
     });
 
     // 리뷰 추가
-    document.getElementById('rv-addBtn').addEventListener('click', () => {
+    document.getElementById('rv-addBtn').addEventListener('click', async () => {
       const policyId = document.getElementById('rv-policy').value;
       const author = document.getElementById('rv-author').value.trim();
       const text = document.getElementById('rv-text').value.trim();
@@ -430,16 +431,16 @@ export function renderAdmin(container) {
         return;
       }
 
-      addReview(policyId, { author, text, rating, reply });
-      renderDashboard(); // UI 갱신
-      alert('✅ 리뷰가 추가되었습니다!');
+      await addReview(policyId, { author, text, rating, reply });
+      await renderDashboard(); // UI 갱신
+      alert('✅ 리뷰가 실시간 DB에 추가되었습니다!');
     });
 
     // 리뷰 삭제 (글로벌 핸들러)
-    window._deleteReview = (policyId, reviewId) => {
+    window._deleteReview = async (policyId, reviewId) => {
       if (confirm('이 리뷰를 삭제하시겠습니까?')) {
-        deleteReview(policyId, reviewId);
-        renderDashboard();
+        await deleteReview(policyId, reviewId);
+        await renderDashboard();
       }
     };
 
@@ -467,9 +468,9 @@ export function renderAdmin(container) {
           updates.image = base64Img;
         }
 
-        savePolicyOverride(policyId, updates);
-        alert('공약이 수정되었습니다.');
-        renderDashboard();
+        await savePolicyOverride(policyId, updates);
+        alert('공약 내용이 실시간 DB에 저장되었습니다.\n모든 기기에서 즉시 반영됩니다.');
+        await renderDashboard();
       } catch (err) {
         alert('저장 중 오류가 발생했습니다.');
         console.error(err);
@@ -477,10 +478,10 @@ export function renderAdmin(container) {
     };
 
     // 공약 에디터 초기화
-    window._resetPolicyEdit = (policyId) => {
+    window._resetPolicyEdit = async (policyId) => {
       if (confirm('이 공약의 모든 수정사항을 초기화하시겠습니까? (기본값으로 복구)')) {
-        resetPolicyOverride(policyId);
-        renderDashboard();
+        await resetPolicyOverride(policyId);
+        await renderDashboard();
       }
     };
 
@@ -498,7 +499,7 @@ export function renderAdmin(container) {
 
   // 진입 시 인증 확인
   if (isAuthenticated) {
-    renderDashboard();
+    await renderDashboard();
   } else {
     renderLogin();
   }

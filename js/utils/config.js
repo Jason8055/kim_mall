@@ -1,11 +1,13 @@
 // js/utils/config.js
 /**
  * 관리자 설정 저장소
- * localStorage를 사용하여 관리자가 수정한 설정을 저장/불러오기
+ * Supabase 실시간 DB를 사용하여 관리자가 수정한 설정을 저장/불러오기
  */
+import { supabase } from './supabase.js';
 
 const CONFIG_KEY = 'gunsan1st_config';
 const ADMIN_PW = 'gunsan2026'; // 관리자 비밀번호
+const CONFIG_ID = 'default';
 
 // 기본 설정값
 const DEFAULT_CONFIG = {
@@ -25,25 +27,50 @@ const DEFAULT_CONFIG = {
   footerImage: '',       // 하단 슬로건 배경 이미지
 };
 
-/** 설정 불러오기 (localStorage → 기본값 병합) */
-export function getConfig() {
+/** 설정 불러오기 (Supabase → 기본값 병합) */
+export async function getConfig() {
   try {
-    const saved = localStorage.getItem(CONFIG_KEY);
-    if (saved) {
-      return { ...DEFAULT_CONFIG, ...JSON.parse(saved) };
+    const { data, error } = await supabase
+      .from('app_config')
+      .select('data')
+      .eq('id', CONFIG_ID)
+      .single();
+
+    if (error) {
+      console.error('Error fetching config:', error);
+      alert('설정 불러오기 실패 (Supabase):\n' + error.message);
+      return { ...DEFAULT_CONFIG };
     }
-  } catch (e) { /* 무시 */ }
+
+    if (data && data.data) {
+      return { ...DEFAULT_CONFIG, ...data.data };
+    }
+  } catch (e) {
+    console.error('Config fetch failed:', e);
+    alert('설정 불러오기 실패 (네트워크):\n' + e.message);
+  }
   return { ...DEFAULT_CONFIG };
 }
 
 /** 설정 저장 */
-export function saveConfig(config) {
-  localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+export async function saveConfig(config) {
+  const { error } = await supabase
+    .from('app_config')
+    .upsert({ id: CONFIG_ID, data: config, updated_at: new Date() });
+  
+  if (error) {
+    console.error('Error saving config:', error);
+    alert('설정 저장 실패 (Supabase):\n' + error.message);
+  }
 }
 
 /** 설정 초기화 */
-export function resetConfig() {
-  localStorage.removeItem(CONFIG_KEY);
+export async function resetConfig() {
+  const { error } = await supabase
+    .from('app_config')
+    .upsert({ id: CONFIG_ID, data: {}, updated_at: new Date() });
+  
+  if (error) console.error('Error resetting config:', error);
 }
 
 /** 관리자 비밀번호 확인 */

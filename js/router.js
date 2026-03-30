@@ -10,9 +10,9 @@ export function initRouter(appElement) {
   navigate(appElement);
 }
 
-function navigate(appElement) {
+async function navigate(appElement) {
   const hash = window.location.hash || '#/';
-  appElement.innerHTML = '';
+  appElement.innerHTML = '<div style="display:flex; justify-content:center; padding:40px; color:var(--color-primary);"><span class="material-symbols-rounded" style="animation:spin 1s linear infinite;">sync</span></div>';
   window.scrollTo(0, 0);
 
   // 관리자 페이지에서는 헤더/네비/토스트 숨기기
@@ -27,15 +27,15 @@ function navigate(appElement) {
 
   // 라우트 분기
   if (hash === '#/' || hash === '#/home') {
-    renderHome(appElement);
+    await renderHome(appElement);
   } else if (hash.startsWith('#/product/')) {
     const id = hash.split('/')[2];
-    renderDetail(appElement, id);
+    await renderDetail(appElement, id);
   } else if (hash === '#/cart') {
-    renderCart(appElement);
+    await renderCart(appElement);
   } else if (isAdmin) {
-    renderAdmin(appElement);
+    await renderAdmin(appElement);
   } else {
-    renderHome(appElement);
+    await renderHome(appElement);
   }
 }

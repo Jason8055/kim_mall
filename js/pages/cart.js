@@ -6,11 +6,11 @@
 import { getCartItems, toggleCartItem, clearCart, markAsSupported } from '../utils/cart.js';
 import { getPolicies } from '../data/policies.js';
 
-export function renderCart(container) {
+export async function renderCart(container) {
 
-  function render() {
+  async function render() {
     const cartIds = getCartItems();
-    const currentPolicies = getPolicies();
+    const currentPolicies = await getPolicies();
     const cartPolicies = cartIds.map(id => currentPolicies.find(p => p.id === id)).filter(Boolean);
     const hasItems = cartPolicies.length > 0;
 
@@ -155,5 +155,5 @@ export function renderCart(container) {
     }
   }
 
-  render();
+  await render();
 }

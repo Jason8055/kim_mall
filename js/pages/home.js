@@ -12,12 +12,13 @@ import { renderCountdown } from '../components/countdown.js';
 import { toggleCartItem, isInCart } from '../utils/cart.js';
 import { getConfig } from '../utils/config.js';
 
-export function renderHome(container) {
+export async function renderHome(container) {
   let activeFilter = 'all';
 
-  function render() {
-    const cfg = getConfig();
-    const currentPolicies = getPolicies();
+  async function render() {
+    try {
+      const cfg = await getConfig();
+      const currentPolicies = await getPolicies();
     const filtered = activeFilter === 'all'
       ? currentPolicies
       : currentPolicies.filter(p => p.badge === activeFilter);
@@ -244,7 +245,11 @@ export function renderHome(container) {
         render();
       });
     });
+    } catch (err) {
+      console.error('Home render failed:', err);
+      alert('홈 화면 로딩 중 오류가 발생했습니다. (연결 확인 필요)');
+    }
   }
 
-  render();
+  await render();
 }

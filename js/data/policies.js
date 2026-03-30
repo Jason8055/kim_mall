@@ -108,8 +108,8 @@ export const defaultPolicies = [
 ];
 
 /** 오버라이드 적용된 공약 목록 (동적으로 호출마다 최신 반영) */
-export function getPolicies() {
-  return applyOverrides(defaultPolicies);
+export async function getPolicies() {
+  return await applyOverrides(defaultPolicies);
 }
 
 /** 하위 호환용 — 직접 import { policies }로 쓰던 곳도 동작 */
