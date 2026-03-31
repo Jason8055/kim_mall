@@ -3,6 +3,7 @@ import { initRouter } from './router.js';
 import { renderHeader } from './components/header.js';
 import { renderBottomNav } from './components/bottomNav.js';
 import { initToastSystem } from './components/toast.js';
+import { incrementVisit } from './utils/metrics.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const appContainer = document.getElementById('app');
@@ -12,6 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const mainContent = document.createElement('main');
     const navContainer = document.createElement('div');
     const toastContainer = document.createElement('div');
+    
+    // Visit tracking
+    incrementVisit();
     
     // Setup Toast System (Viral element)
     toastContainer.className = 'toast-container';

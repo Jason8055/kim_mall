@@ -6,11 +6,15 @@
 import { getPolicies } from '../data/policies.js';
 import { isInCart, toggleCartItem } from '../utils/cart.js';
 import { getReviews } from '../utils/reviews.js';
+import { incrementPledgeClick } from '../utils/metrics.js';
 
 export async function renderDetail(container, id) {
   const currentPolicies = await getPolicies();
   const policy = currentPolicies.find(p => p.id === id);
   if (!policy) { location.hash = '#/'; return; }
+
+  // 상품 상세 진입 시 클릭수 트래킹
+  incrementPledgeClick(id);
 
   async function render() {
     const added = isInCart(policy.id);

@@ -25,6 +25,8 @@ const DEFAULT_CONFIG = {
   trustImage: '',        // 신뢰 배너 이미지 (base64 또는 URL)
   promoImage: '',        // 프로모션 이미지
   footerImage: '',       // 하단 슬로건 배경 이미지
+  visitorOffset: 15430,  // 누적 접속자 오프셋 (기본값 설정)
+  concurrentOffset: 120, // 실시간 접속자 오프셋 (기본값 설정)
 };
 
 /** 설정 불러오기 (Supabase → 기본값 병합) */

@@ -8,6 +8,7 @@ import { getPolicies, defaultPolicies } from '../data/policies.js';
 import { savePolicyOverride, resetPolicyOverride, getPolicyOverrides } from '../utils/policyManager.js';
 import { resizeImageFile } from '../utils/imageHelper.js';
 import { getAllCustomReviews, addReview, deleteReview, getReviews, getTotalCustomReviewCount } from '../utils/reviews.js';
+import { getMetrics } from '../utils/metrics.js';
 
 let isAuthenticated = false;
 
@@ -58,6 +59,7 @@ export async function renderAdmin(container) {
     const overrides = await getPolicyOverrides();
     const customReviewsAll = await getAllCustomReviews();
     const reviewCount = await getTotalCustomReviewCount();
+    const metrics = await getMetrics();
 
     container.innerHTML = `
       <div style="min-height:100vh; background:var(--color-bg); padding:20px; padding-bottom:40px;">
@@ -178,6 +180,41 @@ export async function renderAdmin(container) {
                 ${config.footerImage ? '<button id="img-footer-del" style="font-size:12px; color:var(--color-red); white-space:nowrap; cursor:pointer;">삭제</button>' : ''}
               </div>
               ${config.footerImage ? '<img src="' + config.footerImage + '" style="width:100%; max-height:120px; object-fit:cover; border-radius:8px; margin-top:8px; border:1px solid var(--color-border);">' : ''}
+            </div>
+          </div>
+
+          <!-- ========== 섹션 3-3: 트래픽 통계 관리 ========== -->
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <span class="material-symbols-rounded">bar_chart</span>
+              <h2>접속자 통계 및 가짜 수치 조작</h2>
+            </div>
+            <p style="font-size:12px; color:var(--color-text-gray); margin-bottom:12px;">마케팅 효과를 위해 화면 상단에 표시되는 수치를 부풀릴 수 있습니다. (실제 데이터: <strong>\${metrics.actual_visits || 0}명</strong> 방문)</p>
+            <div class="admin-field">
+              <label>누적 방문자 수 더하기 (오프셋)</label>
+              <input type="number" id="cfg-visitorOffset" value="\${config.visitorOffset || 0}" />
+              <span class="admin-hint">예: 15000 입력 시 실제 방문자+\$15000으로 표시됨</span>
+            </div>
+            <div class="admin-field">
+              <label>실시간 접속자 수 기본 오프셋</label>
+              <input type="number" id="cfg-concurrentOffset" value="\${config.concurrentOffset || 0}" />
+              <span class="admin-hint">예: 120 입력 시 현재 120~135명 사이로 접속 중인 것처럼 표시됨</span>
+            </div>
+            
+            <div style="margin-top:20px; border-top:1px solid var(--color-divider); padding-top:12px;">
+                <h3 style="font-size:14px; font-weight:800; color:var(--color-text-dark); margin-bottom:10px;">📊 항목별 실제 관심도 (비공개 데이터)</h3>
+                <div style="background:#f9f9fc; border-radius:8px; padding:12px; border:1px solid var(--color-border-light);">
+                    \${policies.map(p => {
+                        const clicks = (metrics.pledge_clicks && metrics.pledge_clicks[p.id]) || 0;
+                        return \`
+                            <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid rgba(0,0,0,0.05);">
+                                <span style="font-size:12px; color:var(--color-text-dark); text-overflow:ellipsis; overflow:hidden; white-space:nowrap; flex:1; margin-right:8px;">\${p.title}</span>
+                                <span style="font-size:13px; font-weight:800; color:var(--color-primary);">\${clicks}회</span>
+                            </div>
+                        \`;
+                    }).join('')}
+                    \${(!metrics.pledge_clicks || Object.keys(metrics.pledge_clicks).length === 0) ? '<div style="font-size:12px; color:var(--color-text-gray); text-align:center;">아직 클릭된 공약이 없습니다.</div>' : ''}
+                </div>
             </div>
           </div>
 
@@ -384,6 +421,8 @@ export async function renderAdmin(container) {
         trustSubtitle: document.getElementById('cfg-trustSubtitle').value.trim(),
         sectionTitle: document.getElementById('cfg-sectionTitle').value.trim(),
         footerSlogan: document.getElementById('cfg-footerSlogan').value.trim(),
+        visitorOffset: parseInt(document.getElementById('cfg-visitorOffset').value) || 0,
+        concurrentOffset: parseInt(document.getElementById('cfg-concurrentOffset').value) || 0,
         trustImage,
         promoImage,
         footerImage
