@@ -629,3 +629,34 @@
   cursor: pointer;
 }
 .promo-strip .material-symbols-rounded { font-size: 18px; }
+
+/* ===================== BGM 버튼 ===================== */
+.bgm-btn {
+  position: fixed;
+  right: 16px;
+  bottom: 80px; /* 바텀네비 위 */
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  cursor: pointer;
+  color: var(--color-text-light);
+  transition: all 0.3s ease;
+}
+.bgm-btn.playing {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+  /* 재생시에만 잔잔한 바운스 효과를 주어 눈에 띔 */
+  animation: bounce 2s infinite;
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}

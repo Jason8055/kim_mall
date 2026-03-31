@@ -4,6 +4,7 @@ import { renderHeader } from './components/header.js';
 import { renderBottomNav } from './components/bottomNav.js';
 import { initToastSystem } from './components/toast.js';
 import { incrementVisit } from './utils/metrics.js';
+import { initBGM } from './components/bgm.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const appContainer = document.getElementById('app');
@@ -31,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderHeader(headerContainer);
     renderBottomNav(navContainer);
     initToastSystem(toastContainer);
+    initBGM();
     
     // Initialize Router on the main container
     initRouter(mainContent);
